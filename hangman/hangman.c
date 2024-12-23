@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
     char guessedLetters[26] = {0};
     int guesses = 0;
 
-    // Gameplay loop
+    
     while (remainingAttempts > 0) {
         printf("\nWord: ");
         printMask(mask);
