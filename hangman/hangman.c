@@ -32,7 +32,8 @@ int main(int argc, char **argv) {
     }
     fclose(wordsFile);
 
-    
+    /* srand(time(NULL))this right here makes sure we don't get the same output
+    after every random number generation*/ 
     srand(time(NULL));
     char *targetWord = words[rand() % wordCount];
     int wordLength = strlen(targetWord);
