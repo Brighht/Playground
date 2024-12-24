@@ -1,0 +1,41 @@
+START
+
+define this arrays wordToGuess[]     // The word the player must guess
+define this arrays guessedWord[]     // Initially filled with '_', same length as wordToGuess
+define this arrays guessedLetters[]  // Array to store guessed letters
+define this attemptsLeft = max_attempts
+
+WHILE attemptsLeft > 0 AND guessedWord does not equal wordToGuess:
+    DISPLAY guessedWord
+    DISPLAY guessedLetters
+    DISPLAY attemptsLeft
+
+    INPUT playerGuess
+    IF playerGuess is not valid:
+        PRINT "Invalid input. Try again."
+        CONTINUE
+
+    IF playerGuess already in guessedLetters:
+        PRINT "Letter already guessed. Try again."
+        CONTINUE
+
+    ADD playerGuess to guessedLetters
+
+    IF playerGuess in wordToGuess:
+        UPDATE guessedWord to reveal occurrences of playerGuess
+    ELSE:
+        DECREMENT attemptsLeft
+
+    IF guessedWord equals wordToGuess:
+        PRINT "Congratulations! You've guessed the word!"
+        BREAK
+
+IF attemptsLeft == 0:
+    PRINT "Game Over! The word was: " + wordToGuess
+
+ASK "Play again? (yes/no)"
+IF yes:
+    RESET variables and RESTART
+ELSE:
+    PRINT "Thanks for playing!"
+    END
