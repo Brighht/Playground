@@ -1,0 +1,73 @@
+START
+
+INITIALIZE board[3][3] with ' '  // 3x3 grid initialized as empty
+SET currentPlayer = 'X'
+SET gameOver = false
+
+FUNCTION displayBoard():
+    PRINT the current state of board
+
+FUNCTION isValidMove(row, col):
+    RETURN true IF row and col are within bounds AND board[row][col] == ' '
+    ELSE RETURN false
+
+FUNCTION checkWinner():
+    // Check rows
+    FOR each row:
+        IF all cells in the row are the same AND not ' ':
+            RETURN currentPlayer
+    // Check columns
+    FOR each column:
+        IF all cells in the column are the same AND not ' ':
+            RETURN currentPlayer
+    // Check diagonals
+    IF main diagonal OR secondary diagonal have the same symbol AND not ' ':
+        RETURN currentPlayer
+    RETURN null
+
+FUNCTION isBoardFull():
+    FOR each cell in board:
+        IF cell == ' ':
+            RETURN false
+    RETURN true
+
+WHILE NOT gameOver:
+    displayBoard()
+    PRINT "Player " + currentPlayer + ", it's your turn."
+
+    INPUT row, col  // Get player's move
+    row = row - 1  // Convert to zero-based index
+    col = col - 1
+
+    IF NOT isValidMove(row, col):
+        PRINT "Invalid move. Try again."
+        CONTINUE
+
+    board[row][col] = currentPlayer
+
+    winner = checkWinner()
+    IF winner != null:
+        displayBoard()
+        PRINT "Player " + winner + " wins!"
+        SET gameOver = true
+        BREAK
+
+    IF isBoardFull():
+        displayBoard()
+        PRINT "It's a draw!"
+        SET gameOver = true
+        BREAK
+
+    // Switch player
+    IF currentPlayer == 'X':
+        currentPlayer = 'O'
+    ELSE:
+        currentPlayer = 'X'
+
+PRINT "Game Over!"
+ASK "Play again? (yes/no)"
+IF yes:
+    RESET board and variables
+    RESTART
+ELSE:
+    END
