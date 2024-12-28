@@ -48,24 +48,18 @@ bool isLeapYear(int year) {
 }
 
 /*monthDays: returns the required number of days of the particular month*/
-int monthDays(int month){
+int monthDays(int month, int year){
     int days = 0;
-    if(month == 10 || month == 4 || month == 6 || month == 11){
-        days = 30
-    };
-    else if(month == 2){
-        if(isLeapYear(month)){
-            days = 29;
-        }
-        else{
-            days = 28;
-        } 
+    switch(month){
+        case 4: case 6: case 9: case 11:
+            return 30;
+        case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+            return 31;
+        case 2:
+            return isLeapYear(year) ? 29 : 28;          // condition ? value_if_true : value_if_false
+        default:
+            return 0;           //month is invalid
     }
-    else{
-        days = 31;
-    }
-
-    return days;    
 }
 
 /*convertYearToDay: Convert year to days*/
@@ -77,28 +71,76 @@ int convertYearToDay(int year){
 /*int calculateNumOfDays: Calulates the number of days between the start date and end date
 returns an int*/
 int calculateNumOfDays(DMY *startDate, DMY *endDate){
-    int yearResult, monthResult, dayResult = 0;
+    int totalDayResult = 0;
     //year cal
+    //we start date and end date
+    if ((startDate->year > endDate->year) ||
+        (startDate->year == endDate->year && startDate->month > endDate->month) ||
+        (startDate->year == endDate->year && startDate->month == endDate->month && startDate->day > endDate->day)) {
+        DMY temp = *startDate;
+        *startDate = *endDate;
+        *endDate = temp;
+    }
+
+   
+    if (startDate->month == endDate->month) {
+        // Same month: I just directly calculate the difference
+        totalDayResult = endDate->day - startDate->day;
+    } 
+    else {
+        // Different months in the same year
+        for (int m = startDate->month; m <= endDate->month; ++m) {
+            if (m == startDate->month) {
+                totalDayResult += monthDays(m, startDate->year) - startDate->day;
+            } else if (m == endDate->month) {
+                totalDayResult += endDate->day;
+            } else {
+                totalDayResult += monthDays(m, startDate->year);
+            }
+        }
+    }
+
+
     if(startDate->year != endDate->year){
-        //different year
-        if(startDate->year) > (endDate->year){
-        
+         //days remaining in the start year
+        for(int m = startDate->month; m <= 12; ++m){
+            if(m == startDate->month){
+                //eg if day is 15th June it first gets all the days and returns the total - 15
+                totalDayResult += monthDays(m, startDate->year) - startDate->day;
+            }
+            else{
+                //get all the days for the month if not in the start month
+                totalDayResult += monthDays(m, startDate->year);
+            }
+        }
+
+        //days in between years
+        for(int y = startDate->year; y < endDate->year; ++y){
+            totalDayResult += isLeapYear(y) ? 366 : 365;
+        }
+
+        //elapsed days in the end year
+        for (int m = 1; m <= endDate->month; ++m) {
+            if (m == endDate->month) {
+                totalDayResult += endDate->day;
+            } else {
+                totalDayResult += monthDays(m, endDate->year);
+            }
+        }
+
     }
 
-    if(startDate->year == endDate->year){
-        //same year 
-    }
-    
-
-    else if (abs(startDate->year) > abs(endDate->year)){}
-    
+   
+    return totalDayResult;
 }
+
 /*void freeDMY: free dynamically allocated memory for the UserCreated Data-structure
 has no return value*/
 void freeDMY(DMY *dmy){
     free(dmy);
 }
 
+/*createPoint: dynamically allocates memory and creates a new point*/
 Point *createPoint(int x, int y){
     Point *p1 = malloc(sizeof(Point));
     p1->x = x;
@@ -112,9 +154,9 @@ void freePoint(Point *point){
 }
 
 void printDate(char *arg,DMY *dmy){
-    printw("----------------------------------------------------------\n"
-           "|%s: <%d> - <%d> - <%d>                         |\n"
-           "----------------------------------------------------------\n", 
+    printw("--------------------------------------\n"
+           "|%s: <%d> - <%d> - <%d>               \n"
+           "--------------------------------------\n", 
            arg,dmy->day, dmy->month, dmy->year);
 }
 
@@ -131,6 +173,7 @@ void printDetails(){
     );
 }
 
+
 int main(void){
 
     initscr();                                       //initialize ncurses
@@ -140,7 +183,7 @@ int main(void){
     DMY *userStartDate = createStartDate(0,0,0);
     DMY *userEndDate = createStartDate(0,0,0);
 
-    int day,month,year;
+    int totalDays = 0;
     // move(moveScreen->y, moveScreen->x);
     printDetails();
     printw("Today's date is %d-%d-%d on the system\n",tm->tm_mday,tm->tm_mon + 1, tm->tm_year + 1900);
@@ -154,7 +197,9 @@ int main(void){
     addstr("Enter your end date: <dd-mm-yyy>: ");
     scanw("%d %d %d", &userEndDate->day, &userEndDate->month, &userEndDate->year);
     printDate("END DATE",userEndDate);
-    //handle error if user input exceeds our expectations 
+
+    printw("Total Days: %d",totalDays = calculateNumOfDays(userStartDate, userEndDate));
+     
     refresh();
     getch();
     
