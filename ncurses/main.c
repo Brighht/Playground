@@ -49,7 +49,6 @@ bool isLeapYear(int year) {
 
 /*monthDays: returns the required number of days of the particular month*/
 int monthDays(int month, int year){
-    int days = 0;
     switch(month){
         case 4: case 6: case 9: case 11:
             return 30;
@@ -72,7 +71,6 @@ int convertYearToDay(int year){
 returns an int*/
 int calculateNumOfDays(DMY *startDate, DMY *endDate){
     int totalDayResult = 0;
-    //year cal
     //we start date and end date
     if ((startDate->year > endDate->year) ||
         (startDate->year == endDate->year && startDate->month > endDate->month) ||
@@ -92,9 +90,11 @@ int calculateNumOfDays(DMY *startDate, DMY *endDate){
         for (int m = startDate->month; m <= endDate->month; ++m) {
             if (m == startDate->month) {
                 totalDayResult += monthDays(m, startDate->year) - startDate->day;
-            } else if (m == endDate->month) {
+            } 
+            else if (m == endDate->month) {
                 totalDayResult += endDate->day;
-            } else {
+            } 
+            else {
                 totalDayResult += monthDays(m, startDate->year);
             }
         }
@@ -173,6 +173,21 @@ void printDetails(){
     );
 }
 
+void printSchedule(int days){
+    if(days <= 0){
+        printw("Invalid number of days");
+        return;  //becuase it is a void function
+    }
+
+    int weeks = days / 7;
+    int remainingDays = days % 7;
+
+    printw("------------------------\n"
+           "|Weeks: %d | Days: %d  |\n"
+           "------------------------\n"
+           ,weeks,remainingDays);
+}
+
 
 int main(void){
 
@@ -198,8 +213,9 @@ int main(void){
     scanw("%d %d %d", &userEndDate->day, &userEndDate->month, &userEndDate->year);
     printDate("END DATE",userEndDate);
 
-    printw("Total Days: %d",totalDays = calculateNumOfDays(userStartDate, userEndDate));
-     
+    printw("Total Days: %d\n",totalDays = calculateNumOfDays(userStartDate, userEndDate));
+    printSchedule(totalDays);
+
     refresh();
     getch();
     
