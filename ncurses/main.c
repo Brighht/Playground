@@ -237,7 +237,24 @@ void freeSchedule(Schedule *schedule) {
     free(schedule);
 }
 
+void addToSchedule(DMY *mydate, Schedule *schedule) {
+    // Check if resizing is needed
+    if (schedule->size == schedule->capacity) {
+        schedule->capacity = (schedule->capacity == 0) ? 2 : schedule->capacity * 2;
+        DMY **newDays = realloc(schedule->days, sizeof(DMY*) * schedule->capacity);
 
+        if (newDays == NULL) {
+            perror("Failed to allocate memory for schedule");
+            return;
+        }
+
+        schedule->days = newDays;
+    }
+
+    // Add the new date to the schedule array
+    schedule->days[schedule->size] = createStartDate(mydate->day, mydate->month, mydate->year);
+    schedule->size++;
+}
 
 int main(void){
 
@@ -267,6 +284,8 @@ int main(void){
     printSchedule(totalDays);
 
     Schedule *myschedule = createSchedule(totalDays);
+    //to help us know the start date 
+    addToSchedule(userStartDate, myschedule);
 
     refresh();
     getch();
@@ -276,6 +295,7 @@ int main(void){
     // freePoint(moveScreen);
     freeDMY(userStartDate);
     freeDMY(userEndDate);
+    freeSchedule(myschedule);
 
     return 0;
 }
