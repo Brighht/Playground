@@ -27,6 +27,36 @@ typedef struct _dmy{
     int year;
 }DMY;
 
+typedef struct _schedule{
+    DMY **days;
+    int size;
+    int capacity;
+}Schedule;
+
+/*createSchedule: Allocates dynamic memory on the heap to create a new schedule instance*/
+Schedule *createSchedule(int capacity){
+    Schedule *schedule = malloc(sizeof(Schedule));
+    if(schedule == NULL){
+        printw("Failed to allocate memory for schedule");
+        return NULL;
+    }
+
+    schedule->capacity = capacity;
+    schedule->size = 0;
+    schedule->days = malloc(sizeof(DMY*) * schedule->capacity);
+    if(!schedule->days){
+        printw("Unable to allocate memory for days arr!");
+        return NULL;
+    }
+
+    for(int i = 0; i < schedule->capacity; i++){
+        schedule->days[i] == NULL;
+    }
+
+    return schedule;
+}
+
+
 /*DMY *createStartDate: Creates a start date for building your preferred schedule
 returns a pointer to a DMY*/
 DMY *createStartDate(int day, int month, int year){
@@ -188,6 +218,26 @@ void printSchedule(int days){
            ,weeks,remainingDays);
 }
 
+/*free schedule: frees the dynamic memory allocated for schedule itself, an array of pointers 
+pointing an array dates*/
+void freeSchedule(Schedule *schedule) {
+    if (schedule == NULL) {
+        return; // Safeguard against null pointer input
+    }
+
+    // Free each element in the days array
+    for (int i = 0; i < schedule->capacity; i++) {
+        free(schedule->days[i]); // Free individual DMY pointers
+    }
+
+    // Free the array of pointers
+    free(schedule->days);
+
+    // Free the schedule structure itself
+    free(schedule);
+}
+
+
 
 int main(void){
 
@@ -215,6 +265,8 @@ int main(void){
 
     printw("Total Days: %d\n",totalDays = calculateNumOfDays(userStartDate, userEndDate));
     printSchedule(totalDays);
+
+    Schedule *myschedule = createSchedule(totalDays);
 
     refresh();
     getch();
