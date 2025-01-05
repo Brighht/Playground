@@ -288,6 +288,14 @@ void printSchedule(Schedule *schedule){
     
 }
 
+bool isValidDate(int day, int month, int year) {
+    if (year < 1 || month < 1 || month > 12 || day < 1) {
+        return false;
+    }
+    return day <= monthDays(month, year);
+}
+
+
 int main(void){
 
     initscr();                                       //initialize ncurses
@@ -332,3 +340,12 @@ int main(void){
 
     return 0;
 }
+
+//next addition
+// do {
+//     addstr("Enter your start date: <dd-mm-yyyy>: ");
+//     scanw("%d %d %d", &userStartDate->day, &userStartDate->month, &userStartDate->year);
+//     if (!isValidDate(userStartDate->day, userStartDate->month, userStartDate->year)) {
+//         printw("Invalid date! Please try again.\n");
+//     }
+// } while (!isValidDate(userStartDate->day, userStartDate->month, userStartDate->year));
