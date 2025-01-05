@@ -105,9 +105,17 @@ int calculateNumOfDays(DMY *startDate, DMY *endDate){
     if ((startDate->year > endDate->year) ||
         (startDate->year == endDate->year && startDate->month > endDate->month) ||
         (startDate->year == endDate->year && startDate->month == endDate->month && startDate->day > endDate->day)) {
-        DMY temp = *startDate;
-        *startDate = *endDate;
-        *endDate = temp;
+        int tempDay = startDate->day;
+        int tempMonth = startDate->month;
+        int tempYear = startDate->year;
+
+        startDate->day = endDate->day;
+        startDate->month = endDate->month;
+        startDate->year = endDate->year;
+
+        endDate->day = tempDay;
+        endDate->month = tempMonth;
+        endDate->year = tempYear;
     }
 
    
@@ -159,6 +167,12 @@ int calculateNumOfDays(DMY *startDate, DMY *endDate){
         }
 
     }
+    // if (startDate->day == endDate->day &&
+    //     startDate->month == endDate->month &&
+    //     startDate->year == endDate->year) {
+    //     return 1;  // Same day = 1 day
+    // }
+
 
    
     return totalDayResult;
@@ -203,7 +217,7 @@ void printDetails(){
     );
 }
 
-void printSchedule(int days){
+void printRD(int days){
     if(days <= 0){
         printw("Invalid number of days");
         return;  //becuase it is a void function
@@ -227,7 +241,9 @@ void freeSchedule(Schedule *schedule) {
 
     // Free each element in the days array
     for (int i = 0; i < schedule->capacity; i++) {
-        free(schedule->days[i]); // Free individual DMY pointers
+        if (schedule->days[i]) {
+            free(schedule->days[i]);  // Free individual DMY pointers
+        }
     }
 
     // Free the array of pointers
@@ -244,9 +260,11 @@ void addToSchedule(DMY *mydate, Schedule *schedule) {
         DMY **newDays = realloc(schedule->days, sizeof(DMY*) * schedule->capacity);
 
         if (newDays == NULL) {
-            perror("Failed to allocate memory for schedule");
-            return;
+            printw("Memory allocation failed, exiting program.\n");
+            freeSchedule(schedule);
+            exit(EXIT_FAILURE);
         }
+
 
         schedule->days = newDays;
     }
@@ -254,6 +272,20 @@ void addToSchedule(DMY *mydate, Schedule *schedule) {
     // Add the new date to the schedule array
     schedule->days[schedule->size] = createStartDate(mydate->day, mydate->month, mydate->year);
     schedule->size++;
+}
+
+void printSchedule(Schedule *schedule){
+    printw("Starting Day %d: <%d> - <%d> - <%d>\n", 1,
+    schedule->days[0]->day,schedule->days[0]->month, schedule->days[0]->year);
+    for(int i = 1; i < schedule->size; i++){
+        if(i != schedule->size - 1) {
+            printw("Day %d: <%d> - <%d> - <%d>\n",i,
+            schedule->days[i]->day, schedule->days[i]->month, schedule->days[i]->year);
+        }
+        else printw("End Day %d: <%d> - <%d> - <%d>\n", i,
+        schedule->days[i]->day, schedule->days[i]->month, schedule->days[i]->year);
+    }
+    
 }
 
 int main(void){
@@ -281,11 +313,12 @@ int main(void){
     printDate("END DATE",userEndDate);
 
     printw("Total Days: %d\n",totalDays = calculateNumOfDays(userStartDate, userEndDate));
-    printSchedule(totalDays);
+    printRD(totalDays);
 
     Schedule *myschedule = createSchedule(totalDays);
     //to help us know the start date 
     addToSchedule(userStartDate, myschedule);
+    printSchedule(myschedule);
 
     refresh();
     getch();
