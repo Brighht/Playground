@@ -219,7 +219,7 @@ void printDetails(){
 
 void printRD(int days){
     if(days <= 0){
-        printw("Invalid number of days");
+        printw("Invalid number of days\n");
         return;  //becuase it is a void function
     }
 
@@ -301,23 +301,35 @@ int main(void){
     initscr();                                       //initialize ncurses
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);                  //to get current date
-    // Point *moveScreen = createPoint(5,2);
     DMY *userStartDate = createStartDate(0,0,0);
     DMY *userEndDate = createStartDate(0,0,0);
 
     int totalDays = 0;
-    // move(moveScreen->y, moveScreen->x);
     printDetails();
     printw("Today's date is %d-%d-%d on the system\n",tm->tm_mday,tm->tm_mon + 1, tm->tm_year + 1900);
     
     //user start date
-    addstr("Enter your start date: <dd-mm-yyy>: ");
-    scanw("%d %d %d", &userStartDate->day, &userStartDate->month, &userStartDate->year);
+    do {
+        addstr("Enter your start date: <dd-mm-yyyy>: ");
+        scanw("%d %d %d", &userStartDate->day, &userStartDate->month, &userStartDate->year);
+        if (!isValidDate(userStartDate->day, userStartDate->month, userStartDate->year)) {
+            printw("Invalid date! Please try again.\n");
+        }
+    } while (!isValidDate(userStartDate->day, userStartDate->month, userStartDate->year));
+    // addstr("Enter your start date: <dd-mm-yyy>: ");
+    // scanw("%d %d %d", &userStartDate->day, &userStartDate->month, &userStartDate->year);
     printDate("START DATE",userStartDate);
 
     //user end date
-    addstr("Enter your end date: <dd-mm-yyy>: ");
-    scanw("%d %d %d", &userEndDate->day, &userEndDate->month, &userEndDate->year);
+    do {
+        addstr("Enter your end date: <dd-mm-yyy>: ");
+        scanw("%d %d %d", &userEndDate->day, &userEndDate->month, &userEndDate->year);
+        if(!isValidDate(userEndDate->day, userEndDate->month, userEndDate->year)){
+            printw("Invalid date! Please try again.\n");
+        }
+    } while(!isValidDate(userEndDate->day, userEndDate->month, userEndDate->year));
+    
+    
     printDate("END DATE",userEndDate);
 
     printw("Total Days: %d\n",totalDays = calculateNumOfDays(userStartDate, userEndDate));
@@ -342,10 +354,4 @@ int main(void){
 }
 
 //next addition
-// do {
-//     addstr("Enter your start date: <dd-mm-yyyy>: ");
-//     scanw("%d %d %d", &userStartDate->day, &userStartDate->month, &userStartDate->year);
-//     if (!isValidDate(userStartDate->day, userStartDate->month, userStartDate->year)) {
-//         printw("Invalid date! Please try again.\n");
-//     }
-// } while (!isValidDate(userStartDate->day, userStartDate->month, userStartDate->year));
+
