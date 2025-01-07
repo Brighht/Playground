@@ -295,6 +295,9 @@ bool isValidDate(int day, int month, int year) {
     return day <= monthDays(month, year);
 }
 
+void printNextDate(DMY *start, DMY *end){
+
+}
 
 int main(void){
 
@@ -337,8 +340,12 @@ int main(void){
 
     Schedule *myschedule = createSchedule(totalDays);
     //to help us know the start date 
-    addToSchedule(userStartDate, myschedule);
-    printSchedule(myschedule);
+    for(int i = 0; i < totalDays; i++){
+        //FIXME: Not updating nextdate
+        addToSchedule(userStartDate, myschedule);
+        printSchedule(myschedule);
+    }
+    
 
     refresh();
     getch();
@@ -352,6 +359,3 @@ int main(void){
 
     return 0;
 }
-
-//next addition
-
