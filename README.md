@@ -8,6 +8,6 @@ Add a replay option to restart the game.
 
 - *Hangman*: Hangman is a classic word-guessing game where the player tries to figure out a hidden word by guessing one letter at a time. Correct guesses reveal the letter's position(s) in the word, while incorrect guesses add to a counter or draw parts of a "hangman." The goal is to guess the word before running out of attempts.
 
-- *Tcp Server in C*
+- *Tcp Server in C* : A simple tcp server built in C
 - *Utility Programs* : Functions and tools for string manipulation, file handling, and mathematical operations.
 - *Algorithmic Exploration*: Practice with sorting, searching, and data structure manipulation. 
